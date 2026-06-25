@@ -295,3 +295,4 @@ price-index-platform/
 ## 许可证
 
 MIT License
+# Test auto deploy

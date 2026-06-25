@@ -16,6 +16,11 @@ jobs:
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
         script: |
-          cd /home/cloud-price-index || exit
-          git pull origin main
+          cd /root/cloud-price-index || exit
+          if [ ! -d .git ]; then
+            rm -rf *
+            git clone https://github.com/suuuuuu-1/cloud-price-index.git .
+          else
+            git pull origin main
+          fi
           echo "代码更新完成"

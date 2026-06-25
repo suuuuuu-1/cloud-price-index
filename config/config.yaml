@@ -1,0 +1,47 @@
+project_name: cloud-price-index
+
+# 数据生成配置
+base_date: "2026-06-01"  # 基期日期（用于指数计算）
+start_date: "2026-06-01"
+end_date: "2026-06-30"
+
+# 商品配置
+sku_count: 2000
+
+# 平台配置
+platforms:
+  - "淘宝"
+  - "京东"
+  - "拼多多"
+
+# 类目配置
+categories:
+  - "手机数码"
+  - "电脑办公"
+  - "家用电器"
+  - "食品饮料"
+  - "服饰鞋包"
+  - "美妆个护"
+  - "运动户外"
+  - "日用百货"
+
+# 脏数据比例（0.02 表示 2%）
+dirty_data_rate: 0.02
+
+# 促销日配置（周六）
+promo_day_of_week: 6
+
+# 店铺数量范围（每个 SKU 在多少个店铺销售）
+shops_per_sku_min: 2
+shops_per_sku_max: 5
+
+# 价格波动范围（日常）
+price_fluctuation: 0.05
+
+# 促销折扣范围
+promo_discount_min: 0.10
+promo_discount_max: 0.30
+
+# 促销销量倍数范围
+promo_sales_multiplier_min: 2
+promo_sales_multiplier_max: 5

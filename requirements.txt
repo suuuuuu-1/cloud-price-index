@@ -3,3 +3,4 @@ python-dotenv>=1.0.0
 PyYAML>=6.0
 oss2>=2.18.0
 pytest>=7.0.0
+clickhouse-connect>=0.6.0  # ClickHouse 客户端（可选）

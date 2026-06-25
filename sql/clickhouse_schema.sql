@@ -1,33 +1,42 @@
--- ClickHouse 扩展方案建表语句
--- 用于将数据导入 ClickHouse 进行高性能查询分析
+-- ClickHouse 建表语句
 
--- 1. 原始价格明细表 (ODS 层)
+-- 1. 原始价格明细表
 CREATE TABLE IF NOT EXISTS raw_product_price_detail
 (
     date Date COMMENT '日期',
     sku_id String COMMENT 'SKU ID',
-    product_id String COMMENT '商品 ID',
     product_name String COMMENT '商品名称',
-    category_l1 String COMMENT '一级类目',
-    category_l2 String COMMENT '二级类目',
-    brand String COMMENT '品牌',
-    platform String COMMENT '平台',
-    shop_id String COMMENT '店铺 ID',
-    price Decimal(10, 2) COMMENT '价格',
-    sales Int32 COMMENT '销量',
-    is_promo UInt8 COMMENT '是否促销',
-    collect_time DateTime COMMENT '采集时间'
+    category_id String COMMENT '类目 ID',
+    price Decimal(10, 2) COMMENT '价格'
 )
 ENGINE = MergeTree()
 PARTITION BY toYYYYMM(date)
-ORDER BY (date, sku_id, platform, shop_id)
-SETTINGS index_granularity = 8192
-COMMENT '原始商品价格明细表';
+ORDER BY (date, sku_id)
+SETTINGS index_granularity = 8192;
 
--- 2. SKU 日汇总表 (DWS 层)
-CREATE TABLE IF NOT EXISTS dws_sku_daily_summary
+-- 2. 类目维度表
+CREATE TABLE IF NOT EXISTS dim_category
 (
-    date Date COMMENT '日期',
+    category_id String COMMENT '类目 ID',
+    category_name String COMMENT '类目名称',
+    hierarchy UInt8 COMMENT '层级',
+    weight Float32 COMMENT '权重',
+    parent_id String COMMENT '父类目 ID'
+)
+ENGINE = MergeTree()
+ORDER BY category_id;
+
+-- 3. 商品维度表
+CREATE TABLE IF NOT EXISTS dim_product
+(
+    product_id String COMMENT '商品 ID',
+    category_id String COMMENT '类目 ID',
+    product_name String COMMENT '商品名称',
+    weight Float32 COMMENT '权重',
+    base_price Decimal(10, 2) COMMENT '基期价格'
+)
+ENGINE = MergeTree()
+ORDER BY product_id;
     sku_id String COMMENT 'SKU ID',
     product_name String COMMENT '商品名称',
     category_l1 String COMMENT '一级类目',

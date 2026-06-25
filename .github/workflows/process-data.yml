@@ -1,0 +1,43 @@
+name: Process Data from OSS
+
+on:
+  workflow_dispatch:  # 手动触发
+  schedule:
+    - cron: '0 2 * * *'  # 每天凌晨2点运行
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        pip install pandas python-dotenv oss2
+
+    - name: Create .env file
+      run: |
+        echo "OSS_ENABLED=true" >> .env
+        echo "ALIYUN_OSS_ENDPOINT=${{ secrets.ALIYUN_OSS_ENDPOINT }}" >> .env
+        echo "ALIYUN_OSS_BUCKET=${{ secrets.ALIYUN_OSS_BUCKET }}" >> .env
+        echo "ALIYUN_ACCESS_KEY_ID=${{ secrets.ALIYUN_ACCESS_KEY_ID }}" >> .env
+        echo "ALIYUN_ACCESS_KEY_SECRET=${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}" >> .env
+        echo "OSS_PREFIX=cloud-price-index" >> .env
+
+    - name: Download data from OSS
+      run: python download_data.py
+
+    - name: Process data
+      run: python process_simple.py --start-date 2025-05-17 --end-date 2025-06-15
+
+    - name: Upload results to artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: price-index-results
+        path: output/
